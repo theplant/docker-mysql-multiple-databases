@@ -1,20 +1,15 @@
 #!/bin/bash
 
-set -e
-set -u
-
-function create_user_and_database() {
+function create_database() {
 	local database=$1
-	echo "  Creating user and database '$database'"
-	mysql -u root <<-EOSQL
-	    CREATE DATABASE $database;
-EOSQL
+	echo "  Creating database '$database'"
+	mysql -u root --password=$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE $database"
 }
 
 if [ -n "$MYSQL_MULTIPLE_DATABASES" ]; then
 	echo "Multiple database creation requested: $MYSQL_MULTIPLE_DATABASES"
 	for db in $(echo $MYSQL_MULTIPLE_DATABASES | tr ',' ' '); do
-		create_user_and_database $db
+		create_database $db
 	done
 	echo "Multiple databases created"
 fi
